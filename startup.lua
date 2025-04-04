@@ -19,7 +19,7 @@ local function drawMenu()
   local w, h = term.getSize()
   term.setCursorPos(math.floor(w/2 - 4), 1)
   term.setTextColor(colors.yellow)
-  print("== MiniOS ==")
+  print("== MiniOS 1.5 ==")
 
   -- Отображаем кнопки приложений
   for i, app in ipairs(apps) do
