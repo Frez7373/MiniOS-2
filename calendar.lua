@@ -7,10 +7,31 @@ local function getCurrentDate()
   return date.year, date.month, date.day
 end
 
+-- Get the number of days in a specific month and year
+local function getDaysInMonth(year, month)
+  local daysInMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+  -- Check for leap year for February
+  if month == 2 then
+    if (year % 4 == 0 and year % 100 ~= 0) or (year % 400 == 0) then
+      return 29
+    else
+      return 28
+    end
+  else
+    return daysInMonth[month]
+  end
+end
+
+-- Get the weekday of the first day of the month
+local function getFirstDayOfMonth(year, month)
+  local firstDay = os.date("*t", os.time{year = year, month = month, day = 1}).wday
+  return firstDay
+end
+
 -- Function to draw the calendar
 local function drawCalendar(year, month)
-  local daysInMonth = os.day(year, month)
-  local firstDay = os.date("*t", os.time{year = year, month = month, day = 1}).wday
+  local daysInMonth = getDaysInMonth(year, month)
+  local firstDay = getFirstDayOfMonth(year, month)
 
   -- Define the initial offset (for aligning the weekdays)
   local calendar = {}
