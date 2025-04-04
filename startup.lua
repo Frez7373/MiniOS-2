@@ -1,9 +1,9 @@
-local apps = {
+local apps = { 
   {name = "Calculator", file = "apps/calculator.lua", color = colors.orange},
   {name = "Game", file = "apps/game.lua", color = colors.green},
   {name = "Clock", file = "apps/clock.lua", color = colors.purple},
   {name = "Notes", file = "apps/notes.lua", color = colors.cyan},
-  {name = "Print Text", file = "apps/printText.lua", color = colors.blue}  -- Новое приложение для печати текста
+  {name = "Print Text", file = "apps/printText.lua", color = colors.blue}  -- New app for printing text
 }
 
 local function drawButton(label, x, y, w, h, bg, fg)
@@ -44,9 +44,9 @@ local function getTextInput()
   write("Enter text to print: ")
 
   local input = read()
-  local printer = peripheral.wrap("right")  -- Убедитесь, что принтер подключен справа
+  local printer = peripheral.wrap("right")  -- Make sure the printer is connected to the right
   printer.clear()
-  printer.write(input)  -- Печать текста на принтере
+  printer.write(input)  -- Print text to the printer
   print("Text printed!")
 end
 
@@ -57,7 +57,7 @@ while true do
   if sel == 0 then break end
   if sel then
     if apps[sel].name == "Print Text" then
-      getTextInput()  -- Ввод текста для печати
+      getTextInput()  -- Input text for printing
     else
       shell.run(apps[sel].file)
     end
