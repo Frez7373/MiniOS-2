@@ -19,7 +19,7 @@ local function drawMenu()
   local w, h = term.getSize()
   term.setCursorPos(math.floor(w/2 - 4), 1)
   term.setTextColor(colors.yellow)
-  print("== MiniOS ==")
+  print("== MiniOS 1.6 ==")
 
   for i, app in ipairs(apps) do
     drawButton(app.name, 6, 2 + i * 3, w - 12, 3, app.color)
