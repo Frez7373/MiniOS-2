@@ -71,22 +71,6 @@ local function cautiousAI(mx, my, ex, ey)
     return { move = { 0, 0 }, attack = false }
 end
 
--- Handle touch input for buttons (in case you want to click using the mouse in a terminal)
-local function drawButton(label, x, y, w, h, color)
-    setColor(color, colors.white)
-    for i = 0, h - 1 do
-        term.setCursorPos(x, y + i)
-        term.write((" "):rep(w))
-    end
-    term.setCursorPos(x + math.floor((w - #label)/2), y + math.floor(h/2))
-    term.write(label)
-    setColor(colors.black, colors.white)
-end
-
-local function buttonPressed(x, y, w, h, touchX, touchY)
-    return touchX >= x and touchX < x + w and touchY >= y and touchY < y + h
-end
-
 -- Start Game
 local function startGame()
     local bot1 = createBot("Aggressor", 2, 2, aggressiveAI, colors.red)
@@ -131,35 +115,5 @@ local function startGame()
     read()  -- Wait for user to press Enter to exit
 end
 
--- Main Menu
-local function mainMenu()
-    term.clear()
-
-    -- Drawing Start Game and Exit buttons as sensor buttons
-    drawButton("Start Game", 5, 5, 20, 3, colors.green)
-    drawButton("Exit", 5, 10, 20, 3, colors.red)
-
-    -- Create a monitor to capture touch events
-    local monitor = peripheral.wrap("top")  -- Adjust depending on where your monitor is connected
-
-    while true do
-        term.setCursorPos(1, 1)  -- Always reset cursor to top to avoid overlapping text
-        print("Tap the buttons below")
-
-        -- Monitor touch event for "button" press
-        local _, _, touchX, touchY = os.pullEvent("monitor_touch")
-
-        -- Check if the touch coordinates fall within a button area
-        if buttonPressed(5, 5, 20, 3, touchX, touchY) then
-            startGame()
-            return
-        elseif buttonPressed(5, 10, 20, 3, touchX, touchY) then
-            term.clear()
-            term.setCursorPos(1, 1)
-            print("Goodbye!")
-            return
-        end
-    end
-end
-
-mainMenu()
+-- Start the game immediately
+startGame()
