@@ -115,5 +115,5 @@ local function startGame()
     read()  -- Wait for user to press Enter to exit
 end
 
--- Start the game immediately
+-- Directly start the game without any menu
 startGame()
