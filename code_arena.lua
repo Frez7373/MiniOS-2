@@ -134,12 +134,14 @@ end
 -- Main Menu
 local function mainMenu()
     term.clear()
+
+    -- Drawing Start Game and Exit buttons as sensor buttons
     drawButton("Start Game", 5, 5, 20, 3, colors.green)
     drawButton("Exit", 5, 10, 20, 3, colors.red)
 
     while true do
         term.setCursorPos(1, 1)  -- Always reset cursor to top to avoid overlapping text
-        print("Use mouse to click or type 'start' and press Enter")
+        print("Tap the buttons below")
 
         -- Mouse click handling for "button" press
         local _, _, touchX, touchY = os.pullEvent("monitor_touch")
