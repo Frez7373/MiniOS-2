@@ -3,13 +3,6 @@ local arenaWidth = 10
 local arenaHeight = 10
 local sleepTime = 0.4
 
--- Try to use monitor if available
-local mon = peripheral.find("monitor")
-if mon then
-    term.redirect(mon)
-    mon.setTextScale(1)
-end
-
 -- Color setup
 local function setColor(bg, txt)
     term.setBackgroundColor(bg)
@@ -78,7 +71,7 @@ local function cautiousAI(mx, my, ex, ey)
     return { move = { 0, 0 }, attack = false }
 end
 
--- Handle touch input for buttons
+-- Handle touch input for buttons (in case you want to click using the mouse in a terminal)
 local function drawButton(label, x, y, w, h, color)
     setColor(color, colors.white)
     for i = 0, h - 1 do
@@ -134,8 +127,8 @@ local function startGame()
     setColor(colors.green, colors.white)
     print("🏆 Winner: " .. winner.name)
     setColor(colors.black, colors.white)
-    print("Tap anywhere to exit...")
-    os.pullEvent("monitor_touch")
+    print("Press Enter to exit...")
+    read()  -- Wait for user to press Enter to exit
 end
 
 -- Main Menu
@@ -145,11 +138,15 @@ local function mainMenu()
     drawButton("Exit", 5, 10, 20, 3, colors.red)
 
     while true do
-        local _, _, touchX, touchY = os.pullEvent("monitor_touch")
-        if buttonPressed(5, 5, 20, 3, touchX, touchY) then
+        term.setCursorPos(1, 1)  -- Always reset cursor to top to avoid overlapping text
+        print("Use arrow keys to navigate or press Enter to select")
+
+        -- Handle user input for button selection
+        local input = read()
+        if input == "start" then
             startGame()
             return
-        elseif buttonPressed(5, 10, 20, 3, touchX, touchY) then
+        elseif input == "exit" then
             term.clear()
             term.setCursorPos(1, 1)
             print("Goodbye!")
