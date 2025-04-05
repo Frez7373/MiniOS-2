@@ -139,14 +139,15 @@ local function mainMenu()
 
     while true do
         term.setCursorPos(1, 1)  -- Always reset cursor to top to avoid overlapping text
-        print("Use arrow keys to navigate or press Enter to select")
+        print("Use mouse to click or type 'start' and press Enter")
 
-        -- Handle user input for button selection
-        local input = read()
-        if input == "start" then
+        -- Mouse click handling for "button" press
+        local _, _, touchX, touchY = os.pullEvent("monitor_touch")
+
+        if buttonPressed(5, 5, 20, 3, touchX, touchY) then
             startGame()
             return
-        elseif input == "exit" then
+        elseif buttonPressed(5, 10, 20, 3, touchX, touchY) then
             term.clear()
             term.setCursorPos(1, 1)
             print("Goodbye!")
