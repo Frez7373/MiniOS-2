@@ -139,13 +139,17 @@ local function mainMenu()
     drawButton("Start Game", 5, 5, 20, 3, colors.green)
     drawButton("Exit", 5, 10, 20, 3, colors.red)
 
+    -- Create a monitor to capture touch events
+    local monitor = peripheral.wrap("top")  -- Adjust depending on where your monitor is connected
+
     while true do
         term.setCursorPos(1, 1)  -- Always reset cursor to top to avoid overlapping text
         print("Tap the buttons below")
 
-        -- Mouse click handling for "button" press
+        -- Monitor touch event for "button" press
         local _, _, touchX, touchY = os.pullEvent("monitor_touch")
 
+        -- Check if the touch coordinates fall within a button area
         if buttonPressed(5, 5, 20, 3, touchX, touchY) then
             startGame()
             return
