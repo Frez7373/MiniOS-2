@@ -7,7 +7,7 @@ local sleepTime = 0.4
 local mon = peripheral.find("monitor")
 if mon then
     term.redirect(mon)
-    mon.setTextScale(0.5)
+    mon.setTextScale(1)
 end
 
 -- Color setup
@@ -16,40 +16,10 @@ local function setColor(bg, txt)
     term.setTextColor(txt)
 end
 
--- Bot constructor
-local function createBot(name, x, y, ai, color)
-    return {
-        name = name,
-        x = x,
-        y = y,
-        hp = 10,
-        ai = ai,
-        color = color
-    }
-end
-
--- AI logic
-local function aggressiveAI(mx, my, ex, ey)
-    local dx = (ex > mx) and 1 or (ex < mx and -1 or 0)
-    local dy = (ey > my) and 1 or (ey < my and -1 or 0)
-    return { move = { dx, dy }, attack = true }
-end
-
-local function cautiousAI(mx, my, ex, ey)
-    local dist = math.abs(mx - ex) + math.abs(my - ey)
-    if dist <= 1 then
-        local dx = (ex < mx) and 1 or (ex > mx and -1 or 0)
-        local dy = (ey < my) and 1 or (ey > my and -1 or 0)
-        return { move = { dx, dy }, attack = true }
-    end
-    return { move = { 0, 0 }, attack = false }
-end
-
--- Arena drawing
+-- Draw arena
 local function render(bots)
     term.clear()
     term.setCursorPos(1, 1)
-
     for y = 1, arenaHeight do
         for x = 1, arenaWidth do
             local drawn = false
@@ -80,8 +50,52 @@ local function render(bots)
     end
 end
 
--- Game logic
-local function runGame()
+-- Bot logic
+local function createBot(name, x, y, ai, color)
+    return {
+        name = name,
+        x = x,
+        y = y,
+        hp = 10,
+        ai = ai,
+        color = color
+    }
+end
+
+local function aggressiveAI(mx, my, ex, ey)
+    local dx = (ex > mx) and 1 or (ex < mx and -1 or 0)
+    local dy = (ey > my) and 1 or (ey < my and -1 or 0)
+    return { move = { dx, dy }, attack = true }
+end
+
+local function cautiousAI(mx, my, ex, ey)
+    local dist = math.abs(mx - ex) + math.abs(my - ey)
+    if dist <= 1 then
+        local dx = (ex < mx) and 1 or (ex > mx and -1 or 0)
+        local dy = (ey < my) and 1 or (ey > my and -1 or 0)
+        return { move = { dx, dy }, attack = true }
+    end
+    return { move = { 0, 0 }, attack = false }
+end
+
+-- Handle touch input for buttons
+local function drawButton(label, x, y, w, h, color)
+    setColor(color, colors.white)
+    for i = 0, h - 1 do
+        term.setCursorPos(x, y + i)
+        term.write((" "):rep(w))
+    end
+    term.setCursorPos(x + math.floor((w - #label)/2), y + math.floor(h/2))
+    term.write(label)
+    setColor(colors.black, colors.white)
+end
+
+local function buttonPressed(x, y, w, h, touchX, touchY)
+    return touchX >= x and touchX < x + w and touchY >= y and touchY < y + h
+end
+
+-- Start Game
+local function startGame()
     local bot1 = createBot("Aggressor", 2, 2, aggressiveAI, colors.red)
     local bot2 = createBot("Runner", 9, 9, cautiousAI, colors.blue)
     local bots = { bot1, bot2 }
@@ -125,28 +139,17 @@ local function runGame()
 end
 
 -- Main Menu
-local function drawButton(label, x, y, w, h, color)
-    setColor(color, colors.white)
-    for i = 0, h - 1 do
-        term.setCursorPos(x, y + i)
-        term.write((" "):rep(w))
-    end
-    term.setCursorPos(x + math.floor((w - #label)/2), y + math.floor(h/2))
-    term.write(label)
-    setColor(colors.black, colors.white)
-end
-
 local function mainMenu()
     term.clear()
     drawButton("Start Game", 5, 5, 20, 3, colors.green)
     drawButton("Exit", 5, 10, 20, 3, colors.red)
 
     while true do
-        local _, _, tx, ty = os.pullEvent("monitor_touch")
-        if ty >= 5 and ty <= 7 then
-            runGame()
+        local _, _, touchX, touchY = os.pullEvent("monitor_touch")
+        if buttonPressed(5, 5, 20, 3, touchX, touchY) then
+            startGame()
             return
-        elseif ty >= 10 and ty <= 12 then
+        elseif buttonPressed(5, 10, 20, 3, touchX, touchY) then
             term.clear()
             term.setCursorPos(1, 1)
             print("Goodbye!")
