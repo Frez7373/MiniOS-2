@@ -29,7 +29,7 @@ local function drawBoard()
             local piece = board[y][x]
             term.setTextColor(colors.black)
             if pieces[piece] then
-                io.write(" " .. pieces[piece] .. "")
+                io.write(" " .. pieces[piece])
             else
                 io.write("   ")
             end
@@ -43,32 +43,46 @@ local function drawBoard()
 end
 
 local function parseCoord(coord)
-    if #coord ~= 2 then return nil end
+    if type(coord) ~= "string" or #coord ~= 2 then return nil end
     local file = string.byte(coord:sub(1,1):lower()) - 96
-    local rank = 9 - tonumber(coord:sub(2,2))
-    if file >= 1 and file <= 8 and rank >= 1 and rank <= 8 then
-        return {x = file, y = rank}
+    local rank = tonumber(coord:sub(2,2))
+    if not file or not rank then return nil end
+    local y = 9 - rank
+    if file >= 1 and file <= 8 and y >= 1 and y <= 8 then
+        return {x = file, y = y}
     end
     return nil
 end
 
 while true do
     drawBoard()
-    write("\nEnter piece to move (e.g., e2): ")
-    local from = parseCoord(read())
-    if not from then print("Invalid input.") sleep(1) goto continue end
 
-    write("Enter destination (e.g., e4): ")
-    local to = parseCoord(read())
-    if not to then print("Invalid input.") sleep(1) goto continue end
+    -- Input FROM
+    local from
+    repeat
+        write("\nEnter piece to move (e.g., e2): ")
+        local input = read()
+        from = parseCoord(input)
+        if not from then print("Invalid input.") end
+    until from
 
+    -- Check piece exists
     local piece = board[from.y][from.x]
     if piece == " " then
-        print("No piece there!") sleep(1) goto continue
+        print("No piece there!")
+        sleep(1)
+    else
+        -- Input TO
+        local to
+        repeat
+            write("Enter destination (e.g., e4): ")
+            local input = read()
+            to = parseCoord(input)
+            if not to then print("Invalid input.") end
+        until to
+
+        -- Move the piece
+        board[to.y][to.x] = piece
+        board[from.y][from.x] = " "
     end
-
-    board[to.y][to.x] = piece
-    board[from.y][from.x] = " "
-
-    ::continue::
 end
