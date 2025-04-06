@@ -1,13 +1,4 @@
--- Очистка экрана
-term.setBackgroundColor(colors.black)
-term.setTextColor(colors.white)
-term.clear()
-
--- Символы фигур (можно заменить на обычные буквы, если шрифт не поддерживает)
-local pieces = {
-    r = "r", n = "n", b = "b", q = "q", k = "k", p = "p",
-    R = "R", N = "N", B = "B", Q = "Q", K = "K", P = "P"
-}
+-- Простая шахматная доска для терминала CC: Tweaked
 
 -- Инициализация доски
 local board = {
@@ -21,65 +12,56 @@ local board = {
     {"R","N","B","Q","K","B","N","R"}
 }
 
--- Функция отрисовки доски
+-- Печать доски
 local function drawBoard()
-    term.setCursorPos(1, 1)
+    term.clear()
+    term.setCursorPos(1,1)
     print("  a b c d e f g h")
     for y = 1, 8 do
-        local row = tostring(9 - y) .. " "
+        local line = tostring(9 - y) .. " "
         for x = 1, 8 do
             local piece = board[y][x]
-            row = row .. (pieces[piece] or ".") .. " "
+            if piece == " " then piece = "." end
+            line = line .. piece .. " "
         end
-        print(row .. tostring(9 - y))
+        print(line .. tostring(9 - y))
     end
     print("  a b c d e f g h")
 end
 
--- Функция преобразования ввода в координаты
+-- Перевод ввода (например, "e2") в координаты таблицы
 local function parseCoord(input)
-    if #input ~= 2 then return nil end
-    local file = input:sub(1, 1):lower()
-    local rank = tonumber(input:sub(2, 2))
+    if type(input) ~= "string" or #input ~= 2 then return nil end
+    local file = string.sub(input,1,1):lower()
+    local rank = tonumber(string.sub(input,2,2))
+    if not rank or rank < 1 or rank > 8 then return nil end
     local x = string.byte(file) - 96
     local y = 9 - rank
-    if x >= 1 and x <= 8 and y >= 1 and y <= 8 then
-        return {x = x, y = y}
-    end
-    return nil
+    if x < 1 or x > 8 then return nil end
+    return {x = x, y = y}
 end
 
--- Главный цикл игры
+-- Основной цикл
 while true do
     drawBoard()
-    
-    -- Считываем откуда
-    write("\nFrom (e.g., e2): ")
-    local fromCoord = read()
-    local from = parseCoord(fromCoord)
-    
-    if not from then
-        print("Invalid FROM coordinate!")
-        sleep(1)
-    else
-        local piece = board[from.y][from.x]
-        if piece == " " then
-            print("No piece at that square!")
-            sleep(1)
-        else
-            -- Считываем куда
-            write("To (e.g., e4): ")
-            local toCoord = read()
-            local to = parseCoord(toCoord)
 
-            if not to then
-                print("Invalid TO coordinate!")
-                sleep(1)
-            else
-                -- Делаем ход
-                board[to.y][to.x] = piece
-                board[from.y][from.x] = " "
-            end
-        end
+    write("From (e.g. e2): ")
+    local fromInput = read()
+    local from = parseCoord(fromInput)
+    if not from then print("Invalid input.") sleep(1) goto skip end
+
+    write("To (e.g. e4): ")
+    local toInput = read()
+    local to = parseCoord(toInput)
+    if not to then print("Invalid input.") sleep(1) goto skip end
+
+    -- Перемещаем фигуру
+    local piece = board[from.y][from.x]
+    if piece == " " then
+        print("No piece at that square!") sleep(1) goto skip
     end
+    board[to.y][to.x] = piece
+    board[from.y][from.x] = " "
+
+    ::skip::
 end
